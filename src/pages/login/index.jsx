@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
+import { api } from "../../services/api"
 
 const schema = yup.object({
     email: yup.string().email('Email não é válido').required(),
@@ -21,7 +22,20 @@ export const Login = () => {
         resolver: yupResolver(schema)
     });
 
-    const onSubmit = data => console.log(data)
+    const onSubmit = async formData => {
+        try{
+            const {data} = await api.get(`users?email=${formData.email}&senha=${formData.password}`)
+            if(data.length === 1){
+                navigate('/feed')
+            }
+            else{
+                alert('Email ou senha inválido')
+            }
+        }
+        catch{
+            alert('Houve um erro, tente novamente.')
+        }
+    }
 
     const handleClickSignIn = () => {
         navigate('/feed');
